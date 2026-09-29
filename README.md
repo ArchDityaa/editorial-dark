@@ -1,5 +1,12 @@
 # Editorial Dark
 
+[![verify](https://github.com/ArchDityaa/editorial-dark/actions/workflows/verify.yml/badge.svg)](https://github.com/ArchDityaa/editorial-dark/actions/workflows/verify.yml)
+[![license](https://img.shields.io/badge/license-CC%20BY%204.0-8a8a8a)](./LICENSE)
+[![runtime](https://img.shields.io/badge/runtime-0%20dependencies-2d6a4f)](./example/README.md)
+[![bundle](https://img.shields.io/badge/reference%20build-26%20KB%20gz-brightgreen)](./skills/editorial-dark/references/tokens.md)
+[![fonts](https://img.shields.io/badge/fonts-0%20files%20bundled-3d3d3d)](./skills/editorial-dark/references/provenance.md)
+[![agents](https://img.shields.io/badge/agents-opencode%20%C2%B7%20claude%20code%20%C2%B7%20AGENTS.md-5b6ee5)](./install.sh)
+
 A reconstructed design system for **dark, editorial, motion-heavy frontends** —
 packaged as an agent skill that works with OpenCode, Claude Code, and any
 `AGENTS.md`-driven tool.
@@ -38,18 +45,36 @@ so the skill resolves across all three from a single installed directory.
 
 ### Manual install
 
-Copy `skills/editorial-dark/` into any of the three directories. To share
-without git, drop it into a hosted directory and add it to `opencode.json`:
+Copy `skills/editorial-dark/` into any of the three directories.
+
+### Install over HTTP (no clone)
+
+`catalog/` is a ready-to-serve HTTP skill catalog. Point any agent at it and the
+skill downloads on demand:
 
 ```jsonc
 {
   "$schema": "https://opencode.ai/config.json",
-  "skills": ["https://your-host/editorial-dark/skills/"]
+  "skills": ["https://ArchDityaa.github.io/editorial-dark/catalog/"]
 }
 ```
 
-An HTTP catalog needs an `index.json` listing each skill's files. Bump `version`
-when files change or clients will serve a cached copy.
+```sh
+# regenerate after editing the skill
+node scripts/build-catalog.mjs
+```
+
+Two details make this work, both handled by the build script:
+
+1. The entry file is served as `editorial-dark/editorial-dark.md`, **not**
+   `SKILL.md`. A root-level `SKILL.md` gets the literal ID `SKILL` instead of
+   `editorial-dark`, so the skill would install under the wrong name.
+2. `version` in `index.json` is a content hash of every served file. Clients
+   cache by version, so a hand-edited version would leave users stuck on a
+   stale copy forever.
+
+`node scripts/build-catalog.mjs --check` fails if the committed catalog has
+drifted from `skills/`; CI runs it on every push.
 
 ## Try it
 

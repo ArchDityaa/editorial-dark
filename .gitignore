@@ -3,6 +3,12 @@ node_modules/
 *.log
 dist/
 build/
+.playwright-mcp/
+
+# Symlinks created by install.sh — never commit these.
 .opencode/skills/editorial-dark
 .claude/skills/editorial-dark
 .agents/skills/editorial-dark
+
+# catalog/ IS committed on purpose: CI diffs it against skills/ so a stale
+# catalog cannot ship, and Pages deploys it directly.

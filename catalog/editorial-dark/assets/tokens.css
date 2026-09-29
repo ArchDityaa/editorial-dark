@@ -1,0 +1,103 @@
+/* Editorial Dark — design tokens
+ *
+ * Import before any component styles.
+ * Single source of truth for colour, type, spacing and motion.
+ * The full rationale for each value is in references/tokens.md.
+ */
+
+:root {
+  /* ---- Surfaces: four steps, all near-black ------------------------- */
+  --bg-deep:  #090908;   /* deepest — footer, full-bleed sections     */
+  --bg-raise: #131311;   /* raised  — cards, inputs, form panels      */
+  --bg:       #0e0e0d;   /* default page background                   */
+
+  /* ---- Ink: three steps, all warm off-white (never pure white) ----- */
+  --ink:       #ece9e2;  /* primary text                              */
+  --ink-dim:   #8d8a83;  /* secondary text, ~4.9:1 on --bg — AA safe   */
+  --ink-faint: #3a3936;  /* tertiary, 1.67:1 on --bg — FAILS AA.
+                            Lift to #7d7b75 (4.56:1) for real text. */
+  --line:      rgba(236, 233, 226, .12);
+
+  /* ---- Type --------------------------------------------------------- */
+  /* Substitute the two commercial families. See references/tokens.md. */
+  --font-grotesk: "Cabinet Grotesk", "Bricolage Grotesque", "Archivo", sans-serif;
+  --font-body:    "General Sans", "Inter", system-ui, sans-serif;
+  --font-serif:   "Zodiak", "Instrument Serif", Georgia, serif;
+
+  /* ---- Motion: the single curve for the whole system --------------- */
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+
+  /* ---- Layout ------------------------------------------------------- */
+  --pad:         clamp(1.25rem, 4vw, 4rem);
+  --content-max: 128rem;
+
+  /* Two declarations: the first is the fallback, the second overrides it
+     on browsers that support max(). Fluid margin that grows with the
+     viewport until content hits --content-max, then holds. No media
+     query, no container query. */
+  --gutter: var(--pad);
+  --gutter: max(var(--pad), calc((100vw - var(--content-max)) / 2));
+
+  /* ---- Type scale ---------------------------------------------------- */
+  --text-display: clamp(4.2rem, min(13.5vw, 26svh), 16rem);
+  --text-section: clamp(5rem, 15.5vw, 17rem);
+  --text-statement: clamp(1.8rem, 3.8vw, 3.4rem);
+  --text-body: 1rem;
+  --text-small: .85rem;
+  --text-micro: .68rem;
+
+  /* Leading and tracking move together: large type gets tighter. */
+  --leading-display: .88;
+  --leading-body: 1.6;
+  --tracking-display: -.02em;
+  --tracking-mega: -.065em;
+
+  /* ---- Layers -------------------------------------------------------- */
+  --z-grain: 90;
+  --z-nav: 100;
+  --z-mobile-nav: 95;
+  --z-veil: 240;
+  --z-ghost: 245;
+  --z-preloader: 200;
+  --z-cursor: 300;
+
+  /* ---- Touch --------------------------------------------------------- */
+  --tap: 2.75rem;   /* 44px minimum interactive target */
+}
+
+/* Light sections: swap the semantic names rather than adding a palette.
+   color-mix() derives the muted and line variants from the swapped ink. */
+.editorial-light {
+  --l-ink:   var(--bg-deep);
+  --l-muted: color-mix(in srgb, var(--bg-deep) 58%, transparent);
+  --l-line:  color-mix(in srgb, var(--bg-deep) 18%, transparent);
+
+  background: var(--ink);
+  color:      var(--l-ink);
+}
+
+.editorial-light ::selection {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* Metric-adjusted fallbacks: these kill the layout shift when a webfont
+   loads. font-display: swap alone still causes a reflow. Recalculate the
+   numbers for your own faces with a capstyle-style tool. */
+@font-face {
+  font-family: "Grotesk Fallback";
+  src: local("Helvetica Neue"), local("Arial"), local("Roboto");
+  size-adjust: 91%;
+  ascent-override: 98%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Serif Fallback";
+  src: local("Georgia"), local("Times New Roman");
+  size-adjust: 96%;
+  ascent-override: 92%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}

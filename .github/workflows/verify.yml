@@ -1,0 +1,33 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # The claims in the README are checked, not asserted. A badge that
+      # cannot go red is decoration, not information.
+      - name: Check the HTTP catalog is in sync with skills/
+        run: node scripts/build-catalog.mjs --check
+
+      - name: Validate skill frontmatter
+        run: node scripts/verify-skill.mjs
+
+      - name: Validate the example
+        run: node scripts/verify-example.mjs
+
+      - name: Validate the shell installer
+        run: bash -n install.sh

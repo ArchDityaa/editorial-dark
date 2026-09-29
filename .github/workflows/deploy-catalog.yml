@@ -1,0 +1,60 @@
+name: deploy-catalog
+
+# Publishes catalog/ to GitHub Pages so the skill can be installed over HTTP
+# with a single config line, no clone:
+#
+#   { "skills": ["https://ArchDityaa.github.io/editorial-dark/"] }
+#
+# Enable once in repo settings: Pages -> Source -> GitHub Actions.
+# Everything after that is automatic on every push to main.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; let a running one finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Regenerate rather than trusting the committed copy. If this produces a
+      # diff, the committed catalog was stale — build-catalog --check in the
+      # verify workflow already fails the push, so reaching here means it was
+      # in sync. Regenerating keeps the deployed bytes provably current.
+      - name: Build catalog
+        run: node scripts/build-catalog.mjs
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: catalog
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,21 @@
+{
+  "skills": [
+    {
+      "name": "editorial-dark",
+      "version": "1e8b293bc33f",
+      "files": [
+        "editorial-dark.md",
+        "assets/motion.css",
+        "assets/tokens.css",
+        "references/accessibility.md",
+        "references/components.md",
+        "references/layout.md",
+        "references/motion.md",
+        "references/provenance.md",
+        "references/responsive.md",
+        "references/tokens.md",
+        "references/transitions.md"
+      ]
+    }
+  ]
+}
