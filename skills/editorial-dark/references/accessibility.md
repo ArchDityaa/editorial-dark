@@ -137,9 +137,10 @@ scrollbar removes its width and the page shifts sideways on lock.
 
 Documented honestly, because they will show up in an audit:
 
-1. **`--ink-faint` at ~1.9:1 fails AA** for body text. Used for footer meta,
-   small-caps labels, and form placeholders. Lift to `#6b6963` (~4.5:1) if the
-   text is meaningful.
+1. **`--ink-faint` at 1.67:1 fails AA** for body text. Used for footer meta,
+   small-caps labels, and form placeholders. Lift to `#7d7b75` (4.56:1,
+   measured) if the text is meaningful. `#6b6963` is a common guess and only
+   reaches 3.52:1 — still a fail.
 2. **Focus-by-border-colour on inputs** is weaker than a proper ring.
 3. **The custom cursor hides the native one entirely.** Any bug in the cursor
    script leaves users with no pointer at all. Always verify keyboard and

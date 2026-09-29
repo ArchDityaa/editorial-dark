@@ -17,7 +17,7 @@ build.
 /* Ink — three steps, all warm off-white (never pure white) */
 --ink:       #ece9e2;  /* primary text */
 --ink-dim:   #8d8a83;  /* secondary, ~4.9:1 on --bg — AA safe for body copy */
---ink-faint: #3a3936;  /* tertiary, ~1.9:1 on --bg — FAILS AA, decorative only */
+--ink-faint: #3a3936;  /* tertiary, 1.67:1 on --bg — FAILS AA, decorative only */
 --line:      rgba(236, 233, 226, .12);
 ```
 
@@ -33,15 +33,28 @@ step that exists purely to sit behind a hairline or a decorative label.
 
 ### The contrast failure — read this before shipping
 
-`--ink-faint` at **~1.9:1** fails WCAG AA (4.5:1 for body text, 3:1 for large).
+`--ink-faint` measures **1.67:1**, failing WCAG AA (4.5:1 for body text, 3:1
+for large text).
 The reference build uses it for footer meta text, small-caps labels, and form
 placeholder text.
 
 If your content is meaningful, lift it:
 
 ```css
---ink-faint: #6b6963;   /* ~4.5:1 on --bg — AA safe */
+--ink-faint: #7d7b75;   /* 4.56:1 on --bg — measured, AA safe */
 ```
+
+Measured against `--bg: #0e0e0d`:
+
+| Value | Ratio | AA |
+|---|---|---|
+| `#3a3936` (original) | 1.67:1 | fails |
+| `#6b6963` | 3.52:1 | fails |
+| `#7b7973` | 4.44:1 | just fails |
+| `#7d7b75` | 4.56:1 | **passes** |
+| `#8d8a83` (`--ink-dim`) | 5.61:1 | passes |
+
+`#6b6963` is a common guess and it is **not** enough. Use `#7d7b75`.
 
 Keep `#3a3936` only for genuinely decorative marks where the text carries no
 information. If a reviewer flags contrast, this is the first thing to fix.

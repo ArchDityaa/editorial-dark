@@ -56,9 +56,19 @@ when files change or clients will serve a cached copy.
 Ask an agent: *"build me a dark editorial site with word-level text reveals"*
 and check whether it reaches for the skill.
 
+To see the system working first, run the example:
+
+```sh
+python3 -m http.server 8000    # from the repo root
+open http://localhost:8000/example/
+```
+
+`example/README.md` lists what it covers and the six real bugs it uncovered.
+
 ## What's inside
 
 ```
+example/index.html              working demo, zero dependencies
 skills/editorial-dark/
 ├── SKILL.md                    entry point — rules, budget, traps
 ├── assets/

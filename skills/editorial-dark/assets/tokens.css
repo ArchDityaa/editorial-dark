@@ -14,7 +14,8 @@
   /* ---- Ink: three steps, all warm off-white (never pure white) ----- */
   --ink:       #ece9e2;  /* primary text                              */
   --ink-dim:   #8d8a83;  /* secondary text, ~4.9:1 on --bg — AA safe   */
-  --ink-faint: #3a3936;  /* tertiary, ~1.9:1 on --bg — DECORATIVE ONLY */
+  --ink-faint: #3a3936;  /* tertiary, 1.67:1 on --bg — FAILS AA.
+                            Lift to #7d7b75 (4.56:1) for real text. */
   --line:      rgba(236, 233, 226, .12);
 
   /* ---- Type --------------------------------------------------------- */

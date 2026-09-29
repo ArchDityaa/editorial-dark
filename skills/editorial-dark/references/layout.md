@@ -93,6 +93,32 @@ mirroring the entire layout:
 Because every inner rule references `var(--card-*)`, a single declaration
 re-themes ~30 properties. See `tokens.md` for the inversion pattern.
 
+### Theme with `:nth-of-type`, never `:nth-child`
+
+```css
+/* Correct — counts only <article> siblings */
+.pcard:nth-of-type(1) { --card-progress: 25%; }
+.pcard:nth-of-type(2) { --card-progress: 50%; }
+
+/* Wrong if the section has any non-article first child */
+.pcard:nth-child(1) { --card-progress: 25%; }
+```
+
+A screen-reader-only heading is the usual culprit:
+
+```html
+<section class="process">
+  <h2 class="sr-only">Process</h2>   <!-- this is :nth-child(1) -->
+  <article class="pcard">…</article>  <!-- this is :nth-child(2) -->
+</section>
+```
+
+With the `<h2>` present, `:nth-child(2)` matches the **first** card. Every
+theme shifts by one, and nothing looks broken — the colours are all valid, just
+attached to the wrong card. `:nth-of-type` counts only siblings of the same tag,
+so it is immune to any stray wrapper. This bug is invisible in a screenshot of
+one card and obvious the moment you compare two.
+
 > `min-height: 100svh` on sticky cards: use `svh`, not `vh`. `vh` includes the
 > mobile URL bar, so the last card gets cut off when the bar is visible.
 

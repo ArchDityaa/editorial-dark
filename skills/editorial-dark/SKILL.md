@@ -73,6 +73,13 @@ transitions; the whole system is buildable with no dependencies.
 - **`overflow: clip`, not `hidden`,** where you want to prevent scroll
   containment — `hidden` on an ancestor silently creates a scroll container and
   breaks `position: sticky` inside it.
+- **`:nth-of-type`, not `:nth-child`,** for theming a list of cards. A
+  screen-reader-only `<h2>` as the section's first child shifts every
+  `:nth-child(n)` by one, so card 1 gets card 2's theme. `:nth-of-type` counts
+  only siblings of the same element type and is immune.
+- **`aspect-ratio` does nothing on an inline box.** If a media container is a
+  `<span>` or `<a>` and you forget `display: block`, it collapses to zero
+  height and the image silently disappears.
 
 ## Licensing
 
