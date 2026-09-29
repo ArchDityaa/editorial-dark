@@ -1,0 +1,246 @@
+/* Editorial Dark — motion primitives
+ *
+ * Import AFTER tokens.css. This file references five variables it does not
+ * define:
+ *
+ *   --ease-out        tokens.css   the single easing curve
+ *   --gutter          tokens.css   layout gutter
+ *   --z-grain         tokens.css   grain overlay layer
+ *   --font-grotesk    tokens.css   display face
+ *   --i               markup      per-item stagger index, set inline
+ *
+ * If you use this file standalone, define --ease-out and --i or nothing will
+ * animate.
+ *
+ * CSS supplies only the start state; JS drives the animation.
+ * Pair with references/motion.md and references/accessibility.md.
+ */
+
+/* ---------------------------------------------------------------------------
+   1. Reveal — fade in on scroll
+   CSS arms the hidden start state. An IntersectionObserver adds .is-visible.
+   CRITICAL: pair with the <noscript> reset at the bottom of this file.
+   --------------------------------------------------------------------------- */
+[data-reveal] {
+  opacity: 0;
+  transition: opacity .6s var(--ease-out);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+}
+
+/* 1b. Dimmed variant — for text that carries meaning.
+   The content is always readable; it just looks unfinished until revealed.
+   Strictly better than opacity: 0 on a content site. */
+[data-reveal="dim"] {
+  opacity: .14;
+  transition: opacity .8s var(--ease-out);
+}
+
+[data-reveal="dim"].is-visible {
+  opacity: 1;
+}
+
+/* 1c. Rise — fade plus a small vertical move. */
+[data-reveal="rise"] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .6s var(--ease-out), transform .6s var(--ease-out);
+}
+
+[data-reveal="rise"].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------------------------------------------------------------------------
+   2. Text split — line-mask reveal
+   Markup: <span data-split><span class="line"><span class="line-inner">Text</span></span></span>
+   The overflow:hidden on .line is the mask; .line-inner slides up from below.
+   --------------------------------------------------------------------------- */
+[data-split] .line {
+  display: block;
+  overflow: hidden;
+}
+
+[data-split] .line-inner {
+  display: block;
+  transform: translateY(105%);
+  transition: transform .8s var(--ease-out);
+}
+
+[data-split].is-visible .line-inner {
+  transform: none;
+}
+
+/* Per-line stagger via a CSS variable set in markup, so one rule handles
+   any number of children. */
+[data-split] .line:nth-child(1) { transition-delay: calc(0s + var(--i, 0) * .06s); }
+[data-split] .line:nth-child(2) { transition-delay: calc(0s + var(--i, 0) * .06s + .06s); }
+[data-split] .line:nth-child(3) { transition-delay: calc(0s + var(--i, 0) * .06s + .12s); }
+[data-split] .line:nth-child(4) { transition-delay: calc(0s + var(--i, 0) * .06s + .18s); }
+[data-split] .line:nth-child(5) { transition-delay: calc(0s + var(--i, 0) * .06s + .24s); }
+
+/* ---------------------------------------------------------------------------
+   3. Per-word stagger
+   JS wraps each word in <span class="w">. Words sit dimmed, not hidden.
+   --------------------------------------------------------------------------- */
+.w {
+  display: inline-block;
+  opacity: .14;
+  transition: opacity .5s var(--ease-out);
+}
+
+.w.is-visible {
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------------------------
+   4. Float loop — the one transform keyframe in the system
+   Per-item amplitude, duration and NEGATIVE delay, set as local variables.
+   Negative delays stagger the start so the animation is already mid-cycle
+   on load; a positive delay leaves items sitting at the keyframe start.
+   --------------------------------------------------------------------------- */
+@keyframes editorial-float {
+  0%, to { transform: translateZ(0); }
+  50%    { transform: translate3d(var(--float-x, 1px), calc(0px - var(--float-y, 5px)), 0); }
+}
+
+.float {
+  display: block;
+  transform-style: preserve-3d;
+  animation: editorial-float var(--float-duration, 6.4s) ease-in-out infinite;
+  animation-delay: var(--float-delay, 0s);
+  will-change: transform;
+}
+
+/* Pause off-screen — do not burn CPU animating hidden elements. */
+.float:not(.is-near) {
+  animation-play-state: paused;
+}
+
+/* Pause on hover so the user can actually click a moving target. */
+.float:is(:hover, :focus-visible) {
+  animation-play-state: paused;
+}
+
+/* Example per-item values: amplitude 1-7px, duration 5.8s-7.8s.
+.float:nth-child(1) { --float-x: 2px;  --float-y: 5px; --float-duration: 6.4s; --float-delay: -1.2s; }
+.float:nth-child(2) { --float-x: -2px; --float-y: 7px; --float-duration: 7.1s; --float-delay: -3.8s; }
+.float:nth-child(3) { --float-x: 1px;  --float-y: 4px; --float-duration: 5.8s; --float-delay: -2.4s; }
+.float:nth-child(4) { --float-x: -1px; --float-y: 6px; --float-duration: 6.8s; --float-delay: -5.1s; }
+
+/* ---------------------------------------------------------------------------
+   5. Grain overlay
+   steps(4) is the essential detail: linear interpolation makes the texture
+   visibly slide, which reads as a bug. Stepped translation reads as film grain.
+   inset: -5% hides the edges exposed by translating a full-bleed element.
+   contain: layout paint style keeps a fixed full-viewport element from
+   forcing a repaint on every scroll frame.
+   --------------------------------------------------------------------------- */
+.grain {
+  position: fixed;
+  inset: -5%;
+  z-index: var(--z-grain);
+  pointer-events: none;
+  opacity: .05;
+  contain: layout paint style;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .grain { animation: grain-shift .9s steps(4) infinite; }
+}
+
+@keyframes grain-shift {
+  0%  { transform: translate(0); }
+  25% { transform: translate(-2%, 3%); }
+  50% { transform: translate(3%, -2%); }
+  75% { transform: translate(-3%, -3%); }
+  to  { transform: translate(2%, 2%); }
+}
+
+/* ---------------------------------------------------------------------------
+   6. Ambient pulse — a single-property loop for availability dots etc.
+   --------------------------------------------------------------------------- */
+@keyframes editorial-pulse {
+  0%, to { opacity: 1; }
+  50%    { opacity: .25; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pulse { animation: editorial-pulse 2.4s ease-in-out infinite; }
+}
+
+/* ---------------------------------------------------------------------------
+   7. Scroll progress bar without JS positioning
+   Set --progress inline as the element scrolls past, or drive it with a
+   single rAF loop reading getBoundingClientRect().
+   --------------------------------------------------------------------------- */
+.progress {
+  --progress: 0%;
+  position: relative;
+}
+
+.progress::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: var(--progress);
+  height: 2px;
+  background: currentColor;
+  transition: width .1s linear;
+}
+
+/* ---------------------------------------------------------------------------
+   8. Watermark number
+   A full-bleed, barely-there background numeral behind card content.
+   --------------------------------------------------------------------------- */
+.ghost-num {
+  position: absolute;
+  z-index: 0;
+  left: var(--gutter);
+  bottom: -.23em;
+  font-family: var(--font-grotesk);
+  font-size: clamp(14rem, 31vw, 36rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: .7;
+  letter-spacing: -.09em;
+  opacity: .035;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ---------------------------------------------------------------------------
+   9. Minimal driver
+   ~30 lines, no dependencies. Attach .is-visible on intersection,
+   .is-near while in or near the viewport.
+   --------------------------------------------------------------------------- */
+/*
+const io = new IntersectionObserver(
+  (entries) => {
+    for (const e of entries) {
+      e.target.classList.toggle('is-visible', e.isIntersecting);
+    }
+  },
+  { rootMargin: '0px 0px -12% 0px', threshold: .1 }
+);
+document.querySelectorAll('[data-reveal], [data-split], .w').forEach((el) => io.observe(el));
+
+const near = new IntersectionObserver(
+  (entries) => {
+    for (const e of entries) e.target.classList.toggle('is-near', e.isIntersecting);
+  },
+  { rootMargin: '25% 0px 25% 0px' }
+);
+document.querySelectorAll('.float').forEach((el) => near.observe(el));
+*/
+
+/* ---------------------------------------------------------------------------
+   10. No-JavaScript reset
+   MANDATORY. Section 1 sets opacity: 0, which means the page is blank
+   without JS. Put this in <head> inside <noscript>:
+   --------------------------------------------------------------------------- */

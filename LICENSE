@@ -1,0 +1,33 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Copyright (c) 2026 Editorial Dark contributors
+
+This work is licensed under the Creative Commons Attribution 4.0 International
+License. You are free to share and adapt this material for any purpose, including
+commercially, provided you give appropriate credit.
+
+Full legal text: https://creativecommons.org/licenses/by/4.0/legalcode
+Human-readable summary: https://creativecommons.org/licenses/by/4.0/
+
+---
+
+Attribution, if you reuse this material, should credit:
+
+  "Editorial Dark" — a design system reconstructed from the public build of
+  studiors.be (Astro + Tina CMS), documented as a reference implementation.
+  https://github.com/<your-org>/editorial-dark
+
+---
+
+EXCEPTIONS — no font files are included in this repository.
+
+The typefaces named in this documentation (Cabinet Grotesk, Zodiak) are
+commercial, separately licensed, and are NOT distributed here. Redistribution
+requires a license from the respective foundry. Substitute fonts are listed in
+references/tokens.md.
+
+---
+
+No content, copy, photography, video, project names or client names from the
+subject website are included. This repository documents technical method only.
+See references/provenance.md for the full scope of the extraction.

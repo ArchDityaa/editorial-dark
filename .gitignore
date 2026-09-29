@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+*.log
+dist/
+build/
+.opencode/skills/editorial-dark
+.claude/skills/editorial-dark
+.agents/skills/editorial-dark
