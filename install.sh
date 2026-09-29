@@ -43,10 +43,21 @@ install_link() {
 }
 
 # OpenCode reads .claude/skills and .agents/skills as compatibility sources, so
-# one directory serves both. The .opencode path is the native one.
-install_link "${ROOT}/.opencode/skills"  "OpenCode"
-install_link "${ROOT}/.claude/skills"   "Claude Code"
-install_link "${ROOT}/.agents/skills"   "AGENTS.md tools"
+# one directory serves both.
+#
+# For --global, OpenCode's own documented location is
+# ${XDG_CONFIG_HOME:-~/.config}/opencode/skills. ~/.opencode/skills also
+# resolves at runtime, but it is not what the docs specify, so prefer the
+# documented one.
+if [[ "$SCOPE" == "global" ]]; then
+  OC_GLOBAL="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/skills"
+else
+  OC_GLOBAL="${ROOT}/.opencode/skills"
+fi
+
+install_link "${OC_GLOBAL}"            "OpenCode"
+install_link "${ROOT}/.claude/skills"  "Claude Code"
+install_link "${ROOT}/.agents/skills"  "AGENTS.md tools"
 
 # Optional: make the system discover the reference files without loading the
 # skill first. Purely additive; skip with EDITORIAL_DARK_NO_AGENTS=1.

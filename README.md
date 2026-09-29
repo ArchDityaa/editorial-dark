@@ -34,11 +34,27 @@ git clone <this-repo> && cd editorial-dark
 
 Creates symlinks into all three discovery paths. Safe to re-run.
 
+Project-local (`./install.sh`):
+
 | Agent | Path used |
 |---|---|
 | OpenCode | `.opencode/skills/editorial-dark/` |
 | Claude Code | `.claude/skills/editorial-dark/` |
 | AGENTS.md tools | `.agents/skills/editorial-dark/` |
+
+With `--global` the OpenCode entry goes to
+`${XDG_CONFIG_HOME:-~/.config}/opencode/skills/` — OpenCode's documented
+global location. (`~/.opencode/skills/` also resolves at runtime and is watched
+by the server, but it is not the documented path, so the installer uses the
+documented one.) The `.claude` and `.agents` entries stay under `$HOME`.
+
+> **Verified by installation.** Loaded through a global symlink, the skill
+> registers with the correct ID `editorial-dark` and all 8 reference files are
+> readable from its base directory. One caveat: OpenCode's supporting-file
+> *list* comes back empty for symlinked skills. `SKILL.md` enumerates every
+> reference path explicitly, so the agent still knows what to read — but that
+> is a mitigation, not the default. Copy the directory instead of linking if
+> you want the file list populated.
 
 OpenCode treats `.claude/skills` and `.agents/skills` as compatibility sources,
 so the skill resolves across all three from a single installed directory.
