@@ -55,7 +55,7 @@ skill downloads on demand:
 ```jsonc
 {
   "$schema": "https://opencode.ai/config.json",
-  "skills": ["https://ArchDityaa.github.io/editorial-dark/catalog/"]
+  "skills": ["https://archdityaa.github.io/editorial-dark/"]
 }
 ```
 
