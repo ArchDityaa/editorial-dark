@@ -48,13 +48,25 @@ global location. (`~/.opencode/skills/` also resolves at runtime and is watched
 by the server, but it is not the documented path, so the installer uses the
 documented one.) The `.claude` and `.agents` entries stay under `$HOME`.
 
-> **Verified by installation.** Loaded through a global symlink, the skill
-> registers with the correct ID `editorial-dark` and all 8 reference files are
-> readable from its base directory. One caveat: OpenCode's supporting-file
-> *list* comes back empty for symlinked skills. `SKILL.md` enumerates every
-> reference path explicitly, so the agent still knows what to read — but that
-> is a mitigation, not the default. Copy the directory instead of linking if
-> you want the file list populated.
+> **Verified by installation.** Both paths were tested on OpenCode 2.0.18:
+>
+> - **Symlink** — registers with the correct ID `editorial-dark`; all 8
+>   reference files readable from its base directory.
+> - **HTTP catalog** — the server fetches `index.json` and
+>   `editorial-dark/editorial-dark.md`, caches the 11 files under
+>   `~/.cache/opencode/skills/<hash>/`, and registers the same ID.
+>
+> The HTTP install also proves the version-busting design: OpenCode writes
+> `.opencode-version` = `1e8b293bc33f`, which is exactly the content hash in
+> `index.json`. Change a file, the hash changes, the client refetches.
+>
+> **One caveat, and it is not what it first looked like.** OpenCode's
+> supporting-file *list* comes back empty in the skill payload — from a
+> symlink **and** from the HTTP cache alike, so it is not a symlink artifact
+> as originally suspected. This does not matter here, because `SKILL.md`
+> enumerates every reference path explicitly instead of relying on that list.
+> If you fork this skill, keep that table: it is what makes the supporting
+> files discoverable.
 
 OpenCode treats `.claude/skills` and `.agents/skills` as compatibility sources,
 so the skill resolves across all three from a single installed directory.
